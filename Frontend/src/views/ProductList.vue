@@ -109,9 +109,12 @@ const handleAddToCart = (product) => {
     <!-- Search Bar -->
     <div class="max-w-xl mx-auto mb-8">
       <form @submit.prevent="performSearch" class="relative">
-        <input type="search" v-model="searchQuery" @search="performSearch" placeholder="Search for products..."
-               class="w-full px-5 py-3 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-full focus:ring-indigo-500 focus:border-indigo-500 transition-colors dark:bg-gray-700 dark:text-white" />
-        <button type="submit" class="absolute top-0 right-0 mt-2 mr-2 p-2.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none">
+       <!-- <input type="search" v-model="searchQuery" @search="performSearch" placeholder="Search for products..."
+               class="w-full px-5 py-3 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-full focus:ring-indigo-500 focus:border-indigo-500 transition-colors dark:bg-gray-700 dark:text-white" />-->
+    <input type="search" v-model="searchQuery" @search="performSearch" placeholder="Search for products..."
+       class="w-full px-5 py-3 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-full focus:ring-indigo-500 focus:border-indigo-500 transition-colors dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400" />   
+       
+          <button type="submit" class="absolute top-0 right-0 mt-2 mr-2 p-2.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
           </svg>

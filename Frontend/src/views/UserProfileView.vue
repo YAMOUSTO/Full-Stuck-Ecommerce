@@ -1,8 +1,7 @@
 <script setup>
-import { ref, onMounted, watch, reactive } from 'vue'; // Added reactive
+import { ref, onMounted, watch, reactive } from 'vue'; 
 import { useRouter } from 'vue-router';
-import { authState, attemptFetchCurrentUser } from '@/services/auth'; // Using authState
-//import { apiClient } from '@/services/api'; // Or create a specific updateUserProfile function in api.js
+import { authState, attemptFetchCurrentUser } from '@/services/auth'; 
 import whateverNameYouWantForDefault from '@/services/api';
 
 const router = useRouter();
@@ -73,10 +72,6 @@ const handleProfileUpdate = async () => {
        email: editableUser.email, // if email editing is enabled
     };
 
-    // You can create a specific updateUser function in services/api.js
-    // const response = await updateUserProfile(updatePayload);
-    // For now, using apiClient directly:
-   // const response = await apiClient.put('/api/users/me', updatePayload);
     const response = await whateverNameYouWantForDefault.put('/api/users/me', updatePayload);
 
     console.log('Profile updated:', response.data);
@@ -136,15 +131,23 @@ const handleProfileUpdate = async () => {
         <div>
           <label for="fullNameEdit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
           <input type="text" id="fullNameEdit" v-model.trim="editableUser.full_name"
-                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                 class="mt-1 block w-full px-3 py-2 
+                 bg-white dark:bg-gray-700 border 
+                 border-gray-300 dark:border-gray-600 
+                 rounded-md shadow-sm focus:outline-none 
+                 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
-        <!-- Add email field here if you allow email editing -->
-        <!-- Make sure to handle unique email constraints and potential JWT re-issuance on backend if email changes -->
-        <!-- <div>
-          <label for="emailEdit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-          <input type="email" id="emailEdit" v-model.trim="editableUser.email" required
-                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-        </div> -->
+        <div>
+          <label for="emailEdit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+          <input type="email" id="emailEdit" v-model.trim="editableUser.email"
+                 class="mt-1 block w-full px-3 py-2 
+                 bg-white dark:bg-gray-700 border 
+                 border-gray-300 dark:border-gray-600 
+                 rounded-md shadow-sm text-gray-900 dark:text-white 
+                 focus:outline-none focus:ring-indigo-500 
+                 focus:border-indigo-500 sm:text-sm">
+        </div>
+        
 
         <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm" role="alert">
           {{ error }}

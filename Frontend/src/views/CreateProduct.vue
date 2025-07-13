@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue';
-// import axios from 'axios'; // No longer needed directly
-import { createProduct } from '@/services/api'; // Use the createProduct function from your api service
+import { createProduct } from '@/services/api'; 
 import { useRouter } from 'vue-router';
-//import { useToast } from 'vue-toastification';
+
 
 const router = useRouter();
 
@@ -66,12 +65,12 @@ const handleSubmit = async () => {
     productName.value = '';
     productDescription.value = '';
     productPrice.value = null;
-    productImageFile.value = null; // Clear the stored file ref
+    productImageFile.value = null; 
 
-    // Clear the file input element visually
+   
     const fileInput = document.getElementById('productImage');
     if (fileInput) {
-      fileInput.value = ''; // This resets the displayed filename in the input
+      fileInput.value = ''; 
     }
 
    
@@ -104,19 +103,37 @@ const handleSubmit = async () => {
       <div>
         <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name</label>
         <input type="text" id="productName" v-model.trim="productName" required
-               class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-gray-400 dark:placeholder-gray-500">
+               class="mt-1 block w-full px-3 py-2 bg-white
+                dark:bg-gray-700 border border-gray-300 
+                dark:border-gray-600 rounded-md shadow-sm 
+                text-gray-900 dark:text-white
+                focus:outline-none focus:ring-indigo-500 
+                focus:border-indigo-500 sm:text-sm placeholder-gray-400 
+                dark:placeholder-gray-500">
       </div>
 
       <div>
         <label for="productDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description (Optional)</label>
         <textarea id="productDescription" v-model.trim="productDescription" rows="4"
-                  class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-gray-400 dark:placeholder-gray-500"></textarea>
+                  class="mt-1 block w-full px-3 py-2 
+                  bg-white dark:bg-gray-700 border 
+                  border-gray-300 dark:border-gray-600 
+                  rounded-md shadow-sm text-gray-900 dark:text-white 
+                  focus:outline-none focus:ring-indigo-500 
+                  focus:border-indigo-500 sm:text-sm placeholder-gray-400 
+                  dark:placeholder-gray-500">
+        </textarea>
       </div>
 
       <div>
         <label for="productPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Price</label>
         <input type="number" id="productPrice" v-model.number="productPrice" required step="0.01" min="0.01"
-               class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-gray-400 dark:placeholder-gray-500">
+               class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border 
+               border-gray-300 dark:border-gray-600 
+               rounded-md shadow-sm text-gray-900 dark:text-white
+                focus:outline-none focus:ring-indigo-500 
+                focus:border-indigo-500 sm:text-sm 
+                placeholder-gray-400 dark:placeholder-gray-500">
       </div>
       
       <div>
