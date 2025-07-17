@@ -41,7 +41,8 @@ watch(() => authState.currentUser, (newValue) => {
           <RouterLink to="/products" class="px-3 py-2 rounded hover:bg-sky-600 transition-colors">Products</RouterLink>
           
           <template v-if="authState.isAuthenticated"> 
-            <RouterLink to="/products/create" class="px-3 py-2 rounded hover:bg-green-600 transition-colors">Add Product</RouterLink>
+            <RouterLink  v-if="authState.currentUser && (authState.currentUser.role === 'admin' || authState.currentUser.role === 'vendor')" to="/products/create" class="px-3 py-2 
+            rounded hover:bg-green-600 transition-colors">Add Product</RouterLink>
             <RouterLink to="/profile" class="px-3 py-2 rounded hover:bg-teal-600 transition-colors">My Profile</RouterLink>
              <RouterLink to="/orders" class="px-3 py-2 rounded hover:bg-orange-600 transition-colors">My Orders</RouterLink>
             <span class="text-sm text-gray-300 px-3 py-2">Hi, {{ authState.currentUser?.email || 'User' }}</span> 

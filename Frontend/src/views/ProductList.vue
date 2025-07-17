@@ -215,4 +215,6 @@ const handleAddToCart = (product) => {
 .h-16 {
   height: 4rem; 
 }
+
+
 </style>

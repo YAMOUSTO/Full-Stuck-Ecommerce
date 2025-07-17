@@ -23,6 +23,15 @@ import auth
 UPLOAD_DIR = Path("static/images/products")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)  
 
+# Add a minimal User schema for nesting inside the Product response
+
+class UserInProduct(BaseModel):
+    id: int
+    full_name: Optional[str] = None
+    email: str
+    class Config:
+        from_attributes = True
+
 # --- Pydantic Schemas ---
 class ProductBase(BaseModel):
     name: str
@@ -36,9 +45,10 @@ class ProductCreate(ProductBase):
 
 class Product(ProductBase):
     id: int
-
+    owner: UserInProduct
     class Config:
         from_attributes = True 
+
 class CategoryBase(BaseModel):
     name: str
 
@@ -57,6 +67,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase): # For registration
     password: str 
+    role: str = 'customer'
 
 class UserLogin(BaseModel): # For login
     email: str 
@@ -65,10 +76,14 @@ class UserLogin(BaseModel): # For login
 class User(UserBase): 
     id: int
     is_active: bool
+    role: str
+    is_admin: bool = False
     
 
 class Config:
     from_attributes = True
+
+
 class  UserUpdate(UserBase): # For updating user details
     full_name: Optional[str] = None
     password: Optional[str] = None  
@@ -115,16 +130,16 @@ class OrderBase(BaseModel):
     shipping_postal_code: str
     shipping_country: str
 
-class OrderCreate(OrderBase): # This is what the client sends for checkout
-    items: List[OrderItemCreate] # A list of products and their quantities
+class OrderCreate(OrderBase): 
+    items: List[OrderItemCreate] 
 
-class Order(OrderBase): # This is for the response after creating an order
+class Order(OrderBase): 
     id: int
     user_id: Optional[int] = None
     total_price: float
     status: str
-    created_at: datetime # Import datetime from datetime
-    items: List[OrderItem] # A list of the created order items
+    created_at: datetime 
+    items: List[OrderItem] 
     
 
     class Config:
@@ -143,7 +158,7 @@ except Exception as e:
 app = FastAPI(
     title="E-commerce API with MySQL",
     description="API for managing products, orders, etc. for an e-commerce platform.",
-    version="0.3.0", # Incremented version
+    version="0.3.0", 
 )
 
 # --- Static Files Mounting ---
@@ -156,7 +171,7 @@ origins = [
     "http://localhost:8080", 
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8080",
-    # Add your production frontend URL here when you deploy
+    
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -192,29 +207,57 @@ def save_upload_file(upload_file: UploadFile, destination_dir: Path) -> Optional
 # --- API Endpoints ---
 
 
-@app.post("/api/auth/register", response_model=User) # Use your Pydantic User schema for response
+#@app.post("/api/auth/register", response_model=User) # Use your Pydantic User schema for response
+#async def register_user(user_input: UserCreate, db: Session = Depends(database.get_db)):
+#    # Check if user already exists
+#    db_user = auth.get_user_by_email(db, email=user_input.email)
+#    if db_user:
+#        raise HTTPException(status_code=400, detail="Email already registered")
+#    
+#    hashed_password = auth.get_password_hash(user_input.password)
+#    db_user = models.User(
+#        email=user_input.email,
+#        hashed_password=hashed_password,
+#        full_name=user_input.full_name
+#       
+#    )
+#    try:
+#        db.add(db_user)
+#        db.commit()
+#        db.refresh(db_user)
+#        return db_user
+#    except Exception as e:
+#        db.rollback()
+#        print(f"Error registering user: {e}")
+#        raise HTTPException(status_code=500, detail="Could not register user.")
+
+@app.post("/api/auth/register", response_model=User)
 async def register_user(user_input: UserCreate, db: Session = Depends(database.get_db)):
-    # Check if user already exists
     db_user = auth.get_user_by_email(db, email=user_input.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Validate role
+    if user_input.role not in ['customer', 'vendor']:
+        raise HTTPException(status_code=400, detail="Invalid role specified. Must be 'customer' or 'vendor'.")
+
     hashed_password = auth.get_password_hash(user_input.password)
-    db_user = models.User(
+    db_user_model = models.User(
         email=user_input.email,
         hashed_password=hashed_password,
-        full_name=user_input.full_name
-        # Set other fields like is_active if needed
+        full_name=user_input.full_name,
+        role=user_input.role # <-- SET THE ROLE FROM INPUT
     )
+    # ... (rest of your existing try/except block to save user)
     try:
-        db.add(db_user)
+        db.add(db_user_model)
         db.commit()
-        db.refresh(db_user)
-        return db_user
+        db.refresh(db_user_model)
+        return db_user_model
     except Exception as e:
         db.rollback()
-        print(f"Error registering user: {e}")
         raise HTTPException(status_code=500, detail="Could not register user.")
+    
 
 @app.post("/api/auth/login", response_model=Token) # Or name it /api/auth/token
 async def login_for_access_token(
@@ -413,7 +456,7 @@ async def create_new_product(
     description: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(database.get_db),
-    current_user: models.User = Depends(auth.get_current_active_user)
+    current_user: models.User = Depends(auth.require_vendor_or_admin)
 ):
     print(f"Product created by user: {current_user.email}")
     image_url_to_save: Optional[str] = None
@@ -432,7 +475,8 @@ async def create_new_product(
         name=name,
         description=description,
         price=price,
-        image_url=image_url_to_save
+        image_url=image_url_to_save,
+        owner_id=current_user.id
     )
 
     try:
@@ -495,7 +539,11 @@ async def search_products(query: str, db: Session = Depends(database.get_db)):
 @app.get("/api/products", response_model=List[Product])
 async def get_all_products(db: Session = Depends(database.get_db)):
     try:
-        db_products = db.query(models.Product).all()
+        db_products = db.query(models.Product).options(
+    joinedload(models.Product.category),
+    joinedload(models.Product.owner)
+    ).all()
+        
         return db_products
     
     except Exception as e:
@@ -519,13 +567,17 @@ async def update_one_product(
     price: Optional[float] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(database.get_db),
-    current_user: models.User = Depends(auth.get_current_active_user)
+    current_user: models.User = Depends(auth.require_vendor_or_admin)
 ):
     print(f"Product updated by user: {current_user.email}")
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+
     if db_product is None:
         raise HTTPException(status_code=404, detail=f"Product with ID {product_id} not found")
-
+    
+    if current_user.role == 'vendor' and db_product.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this product")
+    
     update_data = {}
     if name is not None:
         update_data["name"] = name
@@ -589,7 +641,7 @@ async def update_one_product(
 async def delete_one_product(
     product_id: int, 
     db: Session = Depends(database.get_db),
-    current_user: models.User = Depends(auth.get_current_active_user)
+    current_user: models.User = Depends(auth.require_vendor_or_admin)
     ):
 
     print(f"Product deleted by user: {current_user.email}")
@@ -597,6 +649,9 @@ async def delete_one_product(
 
     if db_product is None:
         raise HTTPException(status_code=404, detail=f"Product with ID {product_id} not found, cannot delete.")
+
+    if current_user.role == 'vendor' and db_product.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this product")
 
     image_path_to_delete: Optional[Path] = None
     if db_product.image_url:
@@ -631,7 +686,7 @@ async def get_all_categories(db: Session = Depends(database.get_db)):
 async def create_new_category(
     category_input: CategoryCreate,
     db: Session = Depends(database.get_db),
-    current_user: models.User = Depends(auth.get_current_active_user)
+    current_user: models.User = Depends(auth.require_admin)
 ):
   
     # Optional: Check if category already exists

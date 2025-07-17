@@ -9,6 +9,7 @@ const fullName = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const selectedRole = ref('customer');
 
 const isLoading = ref(false);
 const error = ref(null); // Will store error messages (string)
@@ -37,13 +38,12 @@ const handleRegister = async () => {
       full_name: fullName.value || null, // Send null if empty, or backend handles optional
       email: email.value,
       password: password.value,
+      role: selectedRole.value,
     };
 
-    // Use the register function from auth.js
-    // It internally calls apiRegister from api.js, which uses apiClient
     const responseData = await register(registrationData);
 
-    console.log('Registration successful (RegisterView.vue):', responseData); // responseData is what apiRegister returns
+    console.log('Registration successful (RegisterView.vue):', responseData); 
     successMessage.value = `User "${responseData.email}" registered successfully! Please log in.`;
 
     // Clear form
@@ -52,9 +52,9 @@ const handleRegister = async () => {
     password.value = '';
     confirmPassword.value = '';
 
-    // Optional: redirect to login page after a short delay
+
     setTimeout(() => {
-      if (!error.value) { // Only redirect if there was no subsequent error during this process
+      if (!error.value) { 
           router.push('/login');
       }
     }, 2000);
@@ -64,12 +64,12 @@ const handleRegister = async () => {
     // The error object 'err' here is what's thrown by the register/apiRegister/axios call
     if (err.response && err.response.data && err.response.data.detail) {
       error.value = `Registration failed: ${err.response.data.detail}`;
-    } else if (err.message) { // Fallback to err.message if no detailed response
+    } else if (err.message) {
       error.value = `Registration failed: ${err.message}`;
     } else {
       error.value = 'An unexpected registration error occurred.';
     }
-    successMessage.value = ''; // Clear success message on error
+    successMessage.value = ''; 
   } finally {
     isLoading.value = false;
   }
@@ -111,6 +111,26 @@ const handleRegister = async () => {
                    placeholder="Confirm password">
           </div>
         </div>
+
+
+        <!-- ============ ADDED ROLE SELECTION ============ -->
+        <div class="my-4">
+          <p class="text-sm font-medium text-gray-700 dark:text-gray-300">I want to:</p>
+          <fieldset class="mt-2">
+            <legend class="sr-only">Account Type</legend>
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <input id="role-customer" name="role" type="radio" v-model="selectedRole" value="customer" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                <label for="role-customer" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-200">Shop for Products (Customer)</label>
+              </div>
+              <div class="flex items-center">
+                <input id="role-vendor" name="role" type="radio" v-model="selectedRole" value="vendor" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                <label for="role-vendor" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-200">Sell My Products (Vendor)</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <!-- ============================================= -->
 
         <!-- Ensure only one message (error or success) is shown at a time -->
         <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm" role="alert">

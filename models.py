@@ -1,10 +1,10 @@
-from sqlalchemy import Column, Integer, String, Float, Text, Boolean, ForeignKey, DateTime # Add ForeignKey
-from sqlalchemy.orm import relationship # Add relationship
+# ~/ecommerce-platform/models.py
+from sqlalchemy import Column, Integer, String, Float, Text, Boolean, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 from datetime import datetime
-
 import database
 
-class Category(database.Base): # New Category model
+class Category(database.Base):
     __tablename__ = "categories"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -12,7 +12,24 @@ class Category(database.Base): # New Category model
     description = Column(Text, nullable=True)
     slug = Column(String(255), unique=True, index=True, nullable=True) 
 
+    # This relationship is correct: A Category has many Products.
     products = relationship("Product", back_populates="category")
+
+
+class User(database.Base):
+    __tablename__ = "users"
+   
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(255), nullable=True)
+    is_active = Column(Boolean, default=True)
+    role = Column(String(50), default='customer', nullable=False) 
+
+    # This relationship is correct: A User (vendor) has many Products.
+    products = relationship("Product", back_populates="owner")
+    # You can add a relationship to orders as well if needed
+    # orders = relationship("Order", back_populates="user")
 
 
 class Product(database.Base):
@@ -23,40 +40,34 @@ class Product(database.Base):
     description = Column(Text, nullable=True)
     price = Column(Float, nullable=False)
     image_url = Column(String(255), nullable=True)
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True) 
-    category = relationship("Category", back_populates="products")
-
-
-class User(database.Base):
-    __tablename__ = "users"
-    # ... (existing User model columns remain the same)
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    hashed_password = Column(String(255), nullable=False)
-    full_name = Column(String(255), nullable=True)
-    is_active = Column(Boolean, default=True)
     
+    # Foreign Keys
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True) 
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Relationships - These link the above foreign keys to the actual model objects
+    category = relationship("Category", back_populates="products")
+    owner = relationship("User", back_populates="products") # <-- ADD THIS MISSING RELATIONSHIP
+
+
 class Order(database.Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True) # Nullable if you allow guest checkouts
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     total_price = Column(Float, nullable=False)
     
-    # Basic shipping information
     shipping_address_line1 = Column(String(255), nullable=False)
     shipping_city = Column(String(100), nullable=False)
     shipping_postal_code = Column(String(20), nullable=False)
     shipping_country = Column(String(100), nullable=False)
 
-    status = Column(String(50), default="pending", nullable=False) # e.g., pending, processing, shipped, delivered
+    status = Column(String(50), default="pending", nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationship to OrderItem
     items = relationship("OrderItem", back_populates="order")
-    # Relationship to User
-    user = relationship("User") # Add a back_populates on User model if you want two-way relationship
+    user = relationship("User") # To access user from an order, e.g., my_order.user
 
 
 class OrderItem(database.Base):
@@ -66,8 +77,7 @@ class OrderItem(database.Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
-    price_at_time_of_purchase = Column(Float, nullable=False) # Important to capture price at time of order
+    price_at_time_of_purchase = Column(Float, nullable=False)
 
-    # Relationships
     order = relationship("Order", back_populates="items")
     product = relationship("Product")

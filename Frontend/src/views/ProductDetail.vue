@@ -4,6 +4,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router'; 
 import { fetchProductById, deleteProduct } from '@/services/api'; 
 import { useToast } from 'vue-toastification';
+import { authState } from '@/services/auth';
 
 const route = useRoute();
 const router = useRouter();
@@ -139,7 +140,14 @@ const goBack = () => {
         <button @click="handleAddToCart(product)" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
           Add to Cart
         </button>
-        
+        <div v-if="authState.isAuthenticated && 
+              authState.currentUser && 
+              (authState.currentUser.role === 'admin' || 
+              authState.currentUser.id === product.owner.id)"
+              class="mt-4 border-t border-gray-200 
+            dark:border-gray-700 pt-4"
+        >
+      <p class="text-xs text-center ...">Select Actions</p>
         <!-- Edit Product Link -->
         <router-link :to="{ name: 'EditProduct', params: { id: product.id } }"
                       class="mt-4 w-full block text-center py-3 px-6 border border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-bold rounded-lg hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors duration-300">
@@ -153,7 +161,7 @@ const goBack = () => {
                 <span v-if="isDeleting" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2 inline-block"></span>
           {{ isDeleting ? 'Deleting...' : 'Delete Product' }}
         </button>
-
+        </div>
         <!-- Display general error message if it occurred during delete and wasn't a 404 during load -->
          <div v-if="error && product" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm" role="alert">
             {{ error.message }}

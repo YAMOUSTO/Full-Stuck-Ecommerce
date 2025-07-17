@@ -22,11 +22,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 class TokenData(BaseModel): # This is fine here, or could be in a schemas.py
     email: Optional[str] = None
-    # sub: Optional[str] = None # If you decide to use 'sub' for user_id instead of email directly
 
-# --- Utility Functions ---
-# verify_password, get_password_hash, create_access_token, get_user_by_email all look good.
-# ... (they use 'models.User' correctly) ...
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
@@ -77,13 +73,29 @@ async def get_current_user(
     return user
 
 async def get_current_active_user(current_user: models.User = Depends(get_current_user)) -> models.User:
-    # This logic is fine. The 'is_active' check is in get_current_user,
-    # so this function essentially just re-validates or acts as an alias.
-    # If you ONLY want active users, the check in get_current_user is sufficient,
-    # and this get_current_active_user might just be:
-    # current_user: models.User = Depends(get_current_user)
-    # return current_user
-    # However, having it explicit is not wrong if you want a clear semantic difference.
+
     if not current_user.is_active: # Redundant if already checked in get_current_user
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+    return current_user
+
+#async def get_current_admin_user(current_user: models.User = Depends(get_current_active_user)) -> models.User:
+# 
+#    if not current_user.is_admin:
+#        raise HTTPException(
+#            status_code=status.HTTP_403_FORBIDDEN,
+#            detail="The user does not have admin privileges to perform this action."
+#        )
+#    return current_user
+
+
+def require_admin(current_user: models.User = Depends(get_current_active_user)):
+    
+    if current_user.role != 'admin':
+        raise HTTPException(status_code=403, detail="Admin privileges required.")
+    return current_user
+
+def require_vendor_or_admin(current_user: models.User = Depends(get_current_active_user)):
+    
+    if current_user.role not in ['vendor', 'admin']:
+        raise HTTPException(status_code=403, detail="Vendor or Admin privileges required.")
     return current_user
