@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -13,14 +14,17 @@ import database # Correct direct import
 import models   # Correct direct import
 
 # --- Configuration ---
-SECRET_KEY = "XvhjdskjikdsjHJHDQSKLFJKLQJKHklds;:jqmhfdqkjkldjqlkkdhqkdjqkfqhiohdkbkk qhlkmhdkfhkqehihpyitttwdb"
+SECRET_KEY = os.getenv("SECRET_KEY", "XvhjdskjikdsjHJHDQSKLFJKLQJKHklds;:jqmhfdqkjkldjqlkkdhqkdjqkfqhiohdkbkk qhlkmhdkfhkqehihpyitttwdb")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-class TokenData(BaseModel): # This is fine here, or could be in a schemas.py
+
+# Removed invalid JavaScript code that does not belong in a Python file.
+
+class TokenData(BaseModel): 
     email: Optional[str] = None
 
 
@@ -77,15 +81,6 @@ async def get_current_active_user(current_user: models.User = Depends(get_curren
     if not current_user.is_active: # Redundant if already checked in get_current_user
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
     return current_user
-
-#async def get_current_admin_user(current_user: models.User = Depends(get_current_active_user)) -> models.User:
-# 
-#    if not current_user.is_admin:
-#        raise HTTPException(
-#            status_code=status.HTTP_403_FORBIDDEN,
-#            detail="The user does not have admin privileges to perform this action."
-#        )
-#    return current_user
 
 
 def require_admin(current_user: models.User = Depends(get_current_active_user)):

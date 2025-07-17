@@ -74,6 +74,7 @@ watch(() => authState.currentUser, (newValue) => {
 
 <style scoped>
 .router-link-exact-active {
-  @apply text-sky-400 font-semibold;
+  color: #38bdf8; /* Tailwind's text-sky-400 */
+  font-weight: 600; /* Tailwind's font-semibold */
 }
 </style>

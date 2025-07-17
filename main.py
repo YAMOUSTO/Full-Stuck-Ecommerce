@@ -166,12 +166,14 @@ app = FastAPI(
 app.mount("/static_images", StaticFiles(directory="static/images"), name="static_images")
 
 # --- CORS Middleware ---
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 origins = [
     "http://localhost:5173", 
     "http://localhost:8080", 
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8080",
-    
+     FRONTEND_URL, 
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -201,36 +203,10 @@ def save_upload_file(upload_file: UploadFile, destination_dir: Path) -> Optional
         print(f"Error saving image '{upload_file.filename}': {e}")
         return None
     finally:
-        upload_file.file.close() # Always close the file
+        upload_file.file.close() 
 
 
 # --- API Endpoints ---
-
-
-#@app.post("/api/auth/register", response_model=User) # Use your Pydantic User schema for response
-#async def register_user(user_input: UserCreate, db: Session = Depends(database.get_db)):
-#    # Check if user already exists
-#    db_user = auth.get_user_by_email(db, email=user_input.email)
-#    if db_user:
-#        raise HTTPException(status_code=400, detail="Email already registered")
-#    
-#    hashed_password = auth.get_password_hash(user_input.password)
-#    db_user = models.User(
-#        email=user_input.email,
-#        hashed_password=hashed_password,
-#        full_name=user_input.full_name
-#       
-#    )
-#    try:
-#        db.add(db_user)
-#        db.commit()
-#        db.refresh(db_user)
-#        return db_user
-#    except Exception as e:
-#        db.rollback()
-#        print(f"Error registering user: {e}")
-#        raise HTTPException(status_code=500, detail="Could not register user.")
-
 @app.post("/api/auth/register", response_model=User)
 async def register_user(user_input: UserCreate, db: Session = Depends(database.get_db)):
     db_user = auth.get_user_by_email(db, email=user_input.email)
