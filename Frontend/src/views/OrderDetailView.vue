@@ -67,13 +67,13 @@ const formatDate = (dateString) => {
       </div>
       
       <div class="p-6 grid grid-cols-1 md:grid-cols-5 gap-8">
-        <!-- Items Ordered Section (takes up 3 columns) -->
+      
         <div class="md:col-span-3">
           <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Items Ordered</h2>
           <div class="space-y-4">
-            <!-- Loop through items and display nested product info -->
+           
             <div v-for="item in order.items" :key="item.id" class="flex items-start py-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-              <!-- Product Image -->
+             
               <div class="flex-shrink-0 w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-md">
                 <img v-if="item.product.image_url" 
                      :src="item.product.image_url" 
