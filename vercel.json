@@ -2,15 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "main.py",
-      "use": "@vercel/python"
-    },
-    {
       "src": "Frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
       }
+    },
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -27,7 +27,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "Frontend/dist/index.html"
+      "dest": "Frontend/index.html"
     }
   ]
 }
