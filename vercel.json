@@ -16,15 +16,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/main.py"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "dest": "main.py"
     },
     {
       "src": "/(.*)",
-      "dest": "Frontend/dist/index.html"
+      "dest": "/Frontend/dist/index.html"
     }
   ]
 }
