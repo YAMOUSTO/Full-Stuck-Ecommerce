@@ -1,0 +1,11 @@
+[build]
+  # This is the command Netlify will run to build your site.
+  command = "npm run build"
+  
+  # This is the directory Netlify will publish.
+  # It will be created by the build command.
+  publish = "dist"
+  
+  # This is the base directory. Netlify will change into this
+  # directory before running the build command.
+  base = "Frontend"
