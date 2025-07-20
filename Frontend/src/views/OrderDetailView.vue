@@ -76,7 +76,7 @@ const formatDate = (dateString) => {
               <!-- Product Image -->
               <div class="flex-shrink-0 w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-md">
                 <img v-if="item.product.image_url" 
-                     :src="`http://127.0.0.1:8000${item.product.image_url}`" 
+                     :src="item.product.image_url" 
                      :alt="item.product.name" 
                      class="w-full h-full object-cover rounded-md">
                 <div v-else class="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
