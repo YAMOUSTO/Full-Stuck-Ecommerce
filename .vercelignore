@@ -1,0 +1,9 @@
+
+node_modules/
+package.json
+package-lock.json
+
+# Ignore Python virtual environment and cache
+venv/
+__pycache__/
+*.pyc

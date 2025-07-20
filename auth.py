@@ -1,22 +1,36 @@
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel # Not strictly needed here if TokenData is only internal
+from pydantic import BaseModel 
 
 from sqlalchemy.orm import Session
-# from . import database, models # This was the old relative import style
-import database # Correct direct import
-import models   # Correct direct import
+
+import database 
+import models   
+
+
 
 # --- Configuration ---
-SECRET_KEY = os.getenv("SECRET_KEY", "XvhjdskjikdsjHJHDQSKLFJKLQJKHklds;:jqmhfdqkjkldjqlkkdhqkdjqkfqhiohdkbkk qhlkmhdkfhkqehihpyitttwdb")
+IS_PRODUCTION = os.getenv("VERCEL_ENV") == "production"
+
+if IS_PRODUCTION:
+    # In production, we demand that SECRET_KEY is set.
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    if SECRET_KEY is None:
+        raise ValueError("Missing SECRET_KEY environment variable in production.")
+else:
+    SECRET_KEY = os.getenv("SECRET_KEY", "XvhjdskjikdsjHJHDQSKLFJKLQJKHklds;:jqmhfdqkjkldjqlkkdhqkdjqkfqhiohdkbkk qhlkmhdkfhkqehihpyitttwdb")
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+
+#SECRET_KEY = os.getenv("SECRET_KEY", "XvhjdskjikdsjHJHDQSKLFJKLQJKHklds;:jqmhfdqkjkldjqlkkdhqkdjqkfqhiohdkbkk qhlkmhdkfhkqehihpyitttwdb")
+#ALGORITHM = "HS256"
+#ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")

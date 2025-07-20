@@ -13,7 +13,7 @@ const selectedCategoryId = ref(null);
 const searchQuery = ref('');    
 const isSearching = ref(false);     
 
-const loading = ref(true); // For initial page load
+const loading = ref(true); 
 const error = ref(null);
 const cartStore = useCartStore();
 const toast = useToast();
@@ -53,11 +53,11 @@ onMounted(() => {
 });
 
 const performSearch = async () => {
-  // When a search is performed, we clear the category filter
+
   selectedCategoryId.value = null;
 
   if (!searchQuery.value.trim()) {
-    // If search box is cleared, reload the original full list of products and categories
+
     await loadInitialData();
     return;
   }
@@ -126,7 +126,9 @@ const handleAddToCart = (product) => {
     <div class="flex justify-center flex-wrap gap-2 mb-8">
       <button 
         @click="selectCategory(null)"
-        :class="['px-4 py-2 text-sm font-semibold rounded-full transition-colors', !selectedCategoryId ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600']">
+        :class="['px-4 py-2 text-sm font-semibold rounded-full transition-colors', 
+        !selectedCategoryId ? 'bg-indigo-600 text-white shadow-md' :
+        'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600']">
         All Products
       </button>
       <button 

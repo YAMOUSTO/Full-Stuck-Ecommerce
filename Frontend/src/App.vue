@@ -35,7 +35,7 @@ watch(() => authState.currentUser, (newValue) => {
     <nav class="p-4 bg-slate-800 shadow-md">
       <div class="container mx-auto flex justify-between items-center">
         <div>
-          <RouterLink to="/products" class="text-xl font-bold hover:text-sky-400 transition-colors">E-Shop</RouterLink>
+          <RouterLink to="/products" class="text-xl font-bold hover:text-sky-400 transition-colors">SyliShop</RouterLink>
         </div>
         <div class="space-x-4">
           <RouterLink to="/products" class="px-3 py-2 rounded hover:bg-sky-600 transition-colors">Products</RouterLink>
