@@ -1,6 +1,33 @@
-# main.py
 
-# --- Imports ---
+import os # <<< MOVED TO THE TOP
+from dotenv import load_dotenv
+import cloudinary # <<< MOVED TO THE TOP
+import cloudinary.uploader # <<< Also import the uploader
+
+# --- This must be the first code that runs ---
+load_dotenv()
+print("--- FastAPI App Starting: Checking Environment Variables ---")
+
+# --- Configure Cloudinary using the loaded environment variables ---
+# This is the correct way to do it.
+cloudinary.config(
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key = os.getenv("CLOUDINARY_API_KEY"),
+    api_secret = os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+# --- This debugging block is now useful ---
+cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
+api_key = os.getenv("CLOUDINARY_API_KEY")
+api_secret = os.getenv("CLOUDINARY_API_SECRET")
+print(f"Cloudinary Cloud Name: {cloud_name}")
+print(f"Cloudinary API Key Loaded: {bool(api_key)}")
+print(f"Cloudinary API Secret Loaded: {bool(api_secret)}")
+print("---------------------------------------------------------")
+
+
+
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import status
@@ -8,7 +35,6 @@ from pydantic import BaseModel
 from typing import List, Optional
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta, datetime
-import os
 from sqlalchemy.orm import Session, joinedload
 
 # <<< CHANGE 1: Import Cloudinary library
@@ -24,12 +50,7 @@ import auth
 
 # <<< CHANGE 2: Configure Cloudinary using Environment Variables.
 # We will set these in the Vercel dashboard.
-cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    secure=True
-)
+
 
 # --- Pydantic Schemas (No changes needed, these are perfect) ---
 class UserInProduct(BaseModel):

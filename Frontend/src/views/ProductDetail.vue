@@ -2,12 +2,13 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router'; 
-import { fetchProductById, deleteProduct } from '@/services/api'; 
 import { useToast } from 'vue-toastification';
+import { fetchProductById, deleteProduct } from '@/services/api'; 
 import { authState } from '@/services/auth';
 
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
 
 const product = ref(null);
 const loading = ref(true);

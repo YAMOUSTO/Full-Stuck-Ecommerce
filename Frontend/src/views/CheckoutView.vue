@@ -14,7 +14,7 @@ const shippingDetails = reactive({
   address_line1: '',
   city: '',
   postal_code: '',
-  country: 'USA', // Default value
+  country: 'GUINEA', 
 });
 
 const isProcessing = ref(false);

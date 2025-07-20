@@ -22,7 +22,7 @@ const cartStore = useCartStore();
       <div v-for="item in cartStore.items" :key="item.product.id" class="flex flex-col sm:flex-row items-center justify-between py-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
         <div class="flex items-center mb-4 sm:mb-0">
           <div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-md mr-4 flex items-center justify-center text-gray-400">
-            <img v-if="item.product.image_url" :src="`http://127.0.0.1:8000${item.product.image_url}`" :alt="item.product.name" class="w-full h-full object-cover rounded-md">
+            <img v-if="item.product.image_url" :src="item.product.image_url" :alt="item.product.name" class="w-full h-full object-cover rounded-md">
             <span v-else>No Image</span>
           </div>
           <div>
@@ -56,10 +56,7 @@ const cartStore = useCartStore();
           <button @click="cartStore.clearCart()" class="px-6 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg font-semibold transition-colors">
             Clear Cart
           </button>
-      <!--    <button class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
-            Proceed to Checkout
-          </button>
-          -->
+     
 
           <router-link to="/checkout" class="block text-center px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
             Proceed to Checkout

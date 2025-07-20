@@ -53,7 +53,7 @@ export const updateProduct = (id, formData) => {
     },
   });
 };
-export const deleteProduct = (id) => apiClient.delete(`/api/products/${id}`);
+export const deleteProduct = (id) => apiClient.delete(`/products/${id}`);
 
 export const registerUser = (userData) => apiClient.post('/auth/register', userData); 
 export const loginUser = (loginPayload) => { // loginPayload is URLSearchParams

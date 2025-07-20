@@ -86,9 +86,9 @@ const selectCategory = (categoryId) => {
         selectedCategoryId.value = categoryId;
     });
   } else {
-    // Standard category selection
+   
     if (selectedCategoryId.value === categoryId) {
-      selectedCategoryId.value = null; // Toggle off
+      selectedCategoryId.value = null; 
     } else {
       selectedCategoryId.value = categoryId;
     }
@@ -168,8 +168,8 @@ const handleAddToCart = (product) => {
         
         <router-link :to="{ name: 'ProductDetail', params: { id: product.id } }" class="block cursor-pointer">
           <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 group-hover:opacity-75 transition-opacity">
-            <img v-if="product.image_url" :src="`http://127.0.0.1:8000${product.image_url}`" :alt="product.name" class="w-full h-full object-cover">
-            <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
+            <img v-if="product.image_url" :src="product.image_url" :alt="product.name" class="w-full h-full object-cover">
+             <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
               <span>No Image</span>
             </div>
           </div>
