@@ -1,6 +1,6 @@
 fastapi
 sqlalchemy
-PyMySQL
+psycopg2-binary 
 cloudinary
 uvicorn
 python-jose[cryptography]
