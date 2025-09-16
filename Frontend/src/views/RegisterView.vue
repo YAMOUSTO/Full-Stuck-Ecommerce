@@ -9,7 +9,7 @@ const fullName = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
-const selectedRole = ref('customer');
+
 
 const isLoading = ref(false);
 const error = ref(null); // Will store error messages (string)
@@ -38,7 +38,7 @@ const handleRegister = async () => {
       full_name: fullName.value || null, // Send null if empty, or backend handles optional
       email: email.value,
       password: password.value,
-      role: selectedRole.value,
+      
     };
 
     const responseData = await register(registrationData);
@@ -114,6 +114,7 @@ const handleRegister = async () => {
 
 
         <!-- ============ ADDED ROLE SELECTION ============ -->
+       <!--  
         <div class="my-4">
           <p class="text-sm font-medium text-gray-700 dark:text-gray-300">I want to:</p>
           <fieldset class="mt-2">
@@ -129,7 +130,7 @@ const handleRegister = async () => {
               </div>
             </div>
           </fieldset>
-        </div>
+        </div>-->
         <!-- ============================================= -->
 
         <!-- Ensure only one message (error or success) is shown at a time -->

@@ -100,7 +100,7 @@ async def get_current_active_user(current_user: models.User = Depends(get_curren
 def require_admin(current_user: models.User = Depends(get_current_active_user)):
     
     if current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin privileges required.")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required.")
     return current_user
 
 def require_vendor_or_admin(current_user: models.User = Depends(get_current_active_user)):

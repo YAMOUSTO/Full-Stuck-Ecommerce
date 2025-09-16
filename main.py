@@ -316,7 +316,7 @@ async def read_users_me(current_user: models.User = Depends(auth.get_current_act
     return current_user
 
 @app.put("/api/users/me", response_model=User)
-async def update_current_user_details(user_update_input: UserUpdate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+async def update_current_user_details(user_update_input: UserUpdate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.require_admin)):
     user_data_to_update = user_update_input.model_dump(exclude_unset=True)
     if not user_data_to_update:
         raise HTTPException(status_code=400, detail="No update data provided.")
@@ -344,7 +344,7 @@ async def create_new_product(
     description: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(database.get_db),
-    current_user: models.User = Depends(auth.get_current_active_user)
+    current_user: models.User = Depends(auth.require_admin)
 ):
     image_url_to_save = None
     if image:
@@ -432,7 +432,7 @@ async def update_one_product(
 
 @app.delete("/api/products/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_one_product(product_id: int, db: Session = Depends(database.get_db), 
-current_user: models.User = Depends(auth.get_current_active_user)):
+current_user: models.User = Depends(auth.require_admin)):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:
         # Already gone, or never existed. Idempotent.
