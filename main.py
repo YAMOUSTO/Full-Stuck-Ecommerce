@@ -344,7 +344,7 @@ async def create_new_product(
     description: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(database.get_db),
-    current_user: models.User = Depends(auth.require_vendor_or_admin)
+    current_user: models.User = Depends(auth.get_current_active_user)
 ):
     image_url_to_save = None
     if image:
@@ -401,7 +401,8 @@ async def get_one_product(product_id: int, db: Session = Depends(database.get_db
 async def update_one_product(
     product_id: int, name: Optional[str] = Form(None), description: Optional[str] = Form(None),
     price: Optional[float] = Form(None), image: Optional[UploadFile] = File(None),
-    db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.require_vendor_or_admin)
+    db: Session = Depends(database.get_db), 
+    current_user: models.User = Depends(auth.get_current_active_user)
 ):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:
@@ -430,7 +431,8 @@ async def update_one_product(
         raise HTTPException(status_code=500, detail="Could not update product.")
 
 @app.delete("/api/products/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_one_product(product_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.require_vendor_or_admin)):
+async def delete_one_product(product_id: int, db: Session = Depends(database.get_db), 
+current_user: models.User = Depends(auth.get_current_active_user)):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:
         # Already gone, or never existed. Idempotent.
